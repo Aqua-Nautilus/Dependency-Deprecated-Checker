@@ -9,21 +9,15 @@ dict_of_deprecated = {}
 
 def parse_package_json_file(config):
 	file_path =config.package_json_file
-	include_dev_dep = config.include_dev
-
 	package_dependencies = []
-	dev_dependencies = []
+
 	with open(file_path) as f:
 		package_json_content = json.loads(f.read())
 
 	if 'dependencies' in package_json_content:
 		package_dependencies = list(package_json_content['dependencies'].keys())
 
-	if include_dev_dep:
-		if 'devDependencies' in package_json_content:
-			dev_dependencies = list(package_json_content['devDependencies'].keys())
-
-	return (dev_dependencies,package_dependencies)
+	return package_dependencies
 
 
 def scan_packages(packages, config):
@@ -148,7 +142,6 @@ def scan_package_for_dependency_deprecated(package_name, config, list_of_parrent
 			dict_of_deprecated[package_name] = package_name
 			return package_name
 	
-		# TODO - should i consider devDependencies??
 		if 'dependencies' not in resp_json:
 		#	with locki:
 			dict_of_deprecated[package_name] = ""
@@ -177,9 +170,11 @@ def scan_package_for_dependency_deprecated(package_name, config, list_of_parrent
 			# if the dependent package is dependent on a deprecated package
 			if dependent_package_name_deprecated != "":
 				#with locki:
-				dict_of_deprecated[package_name] = dependent_package_name_deprecated
+				#dict_of_deprecated[package_name] = dependent_package_name_deprecated
+				dict_of_deprecated[package_name] = dependency_package
 
-				return dependent_package_name_deprecated
+				#return dependent_package_name_deprecated
+				return dependency_package
 
 		dict_of_deprecated[package_name] = ""
 	except Exception as e:
@@ -206,7 +201,6 @@ def main():
 	# do not alert on packages that do not point to a repository
 	parser.add_argument("--exclude-repo", action='store_true', help="Do not alert on packages that are not associated with a repository. Defaults to False.")
 
-	parser.add_argument("--include-dev", action='store_true', help="Exclude the devDependencies from the scan. Defaults to False")
 
 	# Parse the command-line arguments
 	args = parser.parse_args()
@@ -215,9 +209,9 @@ def main():
 		parser.error('You must provide a readonly GitHub token. If you do not want to scan for archived repositories you can use the --exclude-archived flag')
 
 
-	list_of_dev_packages,list_of_depndency_packages = parse_package_json_file(args)
+	list_of_depndency_packages = parse_package_json_file(args)
 
-	scan_packages(list_of_dev_packages+list_of_depndency_packages, args)
+	scan_packages(list_of_depndency_packages, args)
 
 	print('checking if dependencies are deprecated:')
 	for package in list_of_depndency_packages: 
@@ -231,11 +225,6 @@ def main():
 				chain_of_dep_str += " -> " + dict_of_deprecated[current_package]
 				current_package = dict_of_deprecated[current_package]
 			print(f'package {package} is deprecated, chain of dependency is [{chain_of_dep_str}]')
-
-	print('checking if devDependencies are deprecated:')
-	for package in list_of_dev_packages:
-		if dict_of_deprecated[package]!="":
-			print(f'package {package} is deprecated by dependency of {dict_of_deprecated[package]}')
 
 
 if __name__ == '__main__':
