@@ -68,7 +68,6 @@ def extract_github_repo_from_package_info(package_info):
         github_repo=github_repo[:-1]
     return github_repo
 
-
 # this function assumes there is no leading '/' at the end
 def get_repo_from_github_url(github_repo_link):
     repo_parts_list = github_repo_link.split("/")
@@ -118,8 +117,6 @@ def is_function_directly_deprecated(package_name, npm_response_json, config):
 
 	return False
 
-	# now we check only if the flags 
-
 def scan_package_for_dependency_deprecated(package_name, config, list_of_parrent=[]):
 	try:
 
@@ -143,7 +140,7 @@ def scan_package_for_dependency_deprecated(package_name, config, list_of_parrent
 			return package_name
 	
 		if 'dependencies' not in resp_json:
-		#	with locki:
+			# There are no dependencies so it is not indirectly deprecated
 			dict_of_deprecated[package_name] = ""
 			return ""
 	
@@ -153,15 +150,14 @@ def scan_package_for_dependency_deprecated(package_name, config, list_of_parrent
 		# now we check if one of the dependencies was already found deprecated. this is so we wont go by a different order and check other dependencies when we already have one
 		for dependency_package in list_of_depndencies:
 			if dependency_package in dict_of_deprecated and dict_of_deprecated[dependency_package] != "":
-				#with locki:
 				dict_of_deprecated[package_name] = dependency_package
 
 				return dependency_package
 	
-		# here we do not consider the versions
+		# Here we do not consider the versions
 		for dependency_package in dict_of_dependencies.keys():
 
-			# preventing infinite loops
+			# preventing infinite loops (2 packages dependent on each other)
 			if dependency_package in list_of_parrent:
 				continue
 	
@@ -169,13 +165,11 @@ def scan_package_for_dependency_deprecated(package_name, config, list_of_parrent
 	
 			# if the dependent package is dependent on a deprecated package
 			if dependent_package_name_deprecated != "":
-				#with locki:
-				#dict_of_deprecated[package_name] = dependent_package_name_deprecated
 				dict_of_deprecated[package_name] = dependency_package
 
-				#return dependent_package_name_deprecated
 				return dependency_package
 
+		# All dependent packages are not deprecated
 		dict_of_deprecated[package_name] = ""
 	except Exception as e:
 		print(e)
@@ -193,7 +187,7 @@ def main():
 
 	parser.add_argument("package_json_file", nargs="?", default='package.json', help="path to pacakge.json file, default is 'package.json'")
 
-	parser.add_argument("--github-token", nargs="?", help="GitHub token to use for the api, no permissions needed. This is mandatory unless you state the --exclude-archived flag")
+	parser.add_argument("--github-token","-gh", help="GitHub token to use for the api, no permissions needed. This is mandatory unless you state the --exclude-archived flag")
 
 	# do not include github archived repositories in the scan
 	parser.add_argument("--exclude-archived", action='store_true', help="Do not alert on packages whose GitHub repositories are archived. Defaults to False")
@@ -208,13 +202,12 @@ def main():
 	if not args.exclude_archived and not args.github_token:
 		parser.error('You must provide a readonly GitHub token. If you do not want to scan for archived repositories you can use the --exclude-archived flag')
 
+	list_of_dependency_packages = parse_package_json_file(args)
 
-	list_of_depndency_packages = parse_package_json_file(args)
-
-	scan_packages(list_of_depndency_packages, args)
+	scan_packages(list_of_dependency_packages, args)
 
 	print('checking if dependencies are deprecated:')
-	for package in list_of_depndency_packages: 
+	for package in list_of_dependency_packages: 
 		if dict_of_deprecated[package]!="":
 			# now we print the chain of deprecation
 			chain_of_dep_str=package
