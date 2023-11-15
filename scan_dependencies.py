@@ -9,21 +9,39 @@ dict_of_deprecated = {}
 
 def parse_package_json_file(config):
 	file_path =config.package_json_file
-	package_dependencies = []
 
 	with open(file_path) as f:
 		package_json_content = json.loads(f.read())
 
 	if 'dependencies' in package_json_content:
-		package_dependencies = list(package_json_content['dependencies'].keys())
+		return extract_list_of_dependencies(package_json_content['dependencies'])
+
+	return []
+
+
+def extract_list_of_dependencies(dependencies_dictionary):
+	package_dependencies=[]
+
+	for dependency,version in dependencies_dictionary.items():
+		version = version.strip()
+		if version.startswith('npm:'):
+			# 5 to skip the first @ of a scoped package
+			at_index = version.find('@', 5)
+
+			if at_index==-1:
+				# case of "npm:string-width" will leave us with "string-width"
+				version=version[4:]
+			else:
+				# case of "npm:string-width@^4.2.0" will leave us with "string-width"
+				version=version[4:at_index]
+				
+			package_dependencies.append(version)
+		else:
+			package_dependencies.append(dependency)
 
 	return package_dependencies
 
-
-def scan_packages(packages, config):
-	unique_package_list = set(packages)
-
-	# scan all packages using threads
+def scan_packages(unique_package_list, config):
 	with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
 		for package in unique_package_list:
 			executor.submit(scan_package_for_dependency_deprecated, package, config)
@@ -144,18 +162,17 @@ def scan_package_for_dependency_deprecated(package_name, config, list_of_parrent
 			dict_of_deprecated[package_name] = ""
 			return ""
 	
-		dict_of_dependencies = resp_json['dependencies']
-		list_of_depndencies = dict_of_dependencies.keys()
+		set_of_depndencies = set(extract_list_of_dependencies(resp_json['dependencies']))
 	
 		# now we check if one of the dependencies was already found deprecated. this is so we wont go by a different order and check other dependencies when we already have one
-		for dependency_package in list_of_depndencies:
+		for dependency_package in set_of_depndencies:
 			if dependency_package in dict_of_deprecated and dict_of_deprecated[dependency_package] != "":
 				dict_of_deprecated[package_name] = dependency_package
 
 				return dependency_package
 	
 		# Here we do not consider the versions
-		for dependency_package in dict_of_dependencies.keys():
+		for dependency_package in set_of_depndencies:
 
 			# preventing infinite loops (2 packages dependent on each other)
 			if dependency_package in list_of_parrent:
@@ -202,12 +219,12 @@ def main():
 	if not args.exclude_archived and not args.github_token:
 		parser.error('You must provide a readonly GitHub token. If you do not want to scan for archived repositories you can use the --exclude-archived flag')
 
-	list_of_dependency_packages = parse_package_json_file(args)
+	set_of_dependency_packages = set(parse_package_json_file(args))
 
-	scan_packages(list_of_dependency_packages, args)
+	scan_packages(set_of_dependency_packages, args)
 
 	print('Deprecated dependencies:')
-	for package in list_of_dependency_packages: 
+	for package in set_of_dependency_packages: 
 		if dict_of_deprecated[package]!="":
 			# now we print the chain of deprecation
 			chain_of_dep_str=package
