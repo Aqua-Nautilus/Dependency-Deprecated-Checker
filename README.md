@@ -3,12 +3,9 @@
 ## Description
 
 This program is a Dependency Deprecation Checker that helps to identify deprecated dependencies in your Node.js project by analyzing the `package.json` file. It checks both direct and indirect dependencies against several criteria: if they are marked as deprecated on npm, if they do not have repository information, or if their repository on GitHub is archived.
+The criteria for a deprecated package can be modified by the users.
 
-## Features
-
-- **Deep Scanning**: Analyzes both direct and indirect dependencies for deprecation.
-- **Customizable Criteria**: Allows users to define what constitutes a deprecated package.
-- **GitHub Integration**: Can utilize a GitHub token to check the archival status of repositories.
+This tool is a Proof of Concept (PoC) and does not offer a comprehensive check.
 
 ## Installation
 
@@ -32,7 +29,7 @@ python scan_dependencies.py --github_token YOUR_GITHUB_TOKEN [--exclude-archived
 
 - `package_json_file`: Path to `package.json` file. Defaults to 'package.json' in the current directory.
 - `--github-token`: GitHub token for API access. This is mandatory unless `--exclude-archived` is used.
-- `--exclude-archived`: Exclude checking if a GitHub repository is archived.
+- `--exclude-archived`: Exclude alerting on packages linked to archived repositories in GitHub.
 - `--exclude-repo`: Exclude alerting on packages without an associated repository.
 
 

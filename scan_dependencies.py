@@ -189,10 +189,10 @@ def main():
 
 	parser.add_argument("--github-token","-gh", help="GitHub token to use for the api, no permissions needed. This is mandatory unless you state the --exclude-archived flag")
 
-	# do not include github archived repositories in the scan
+	# Do not include github archived repositories in the scan
 	parser.add_argument("--exclude-archived", action='store_true', help="Do not alert on packages whose GitHub repositories are archived. Defaults to False")
 
-	# do not alert on packages that do not point to a repository
+	# Do not alert on packages that do not point to a repository
 	parser.add_argument("--exclude-repo", action='store_true', help="Do not alert on packages that are not associated with a repository. Defaults to False.")
 
 
@@ -206,7 +206,7 @@ def main():
 
 	scan_packages(list_of_dependency_packages, args)
 
-	print('checking if dependencies are deprecated:')
+	print('Deprecated dependencies:')
 	for package in list_of_dependency_packages: 
 		if dict_of_deprecated[package]!="":
 			# now we print the chain of deprecation
@@ -217,7 +217,9 @@ def main():
 			while  dict_of_deprecated[current_package]!=current_package:
 				chain_of_dep_str += " -> " + dict_of_deprecated[current_package]
 				current_package = dict_of_deprecated[current_package]
-			print(f'package {package} is deprecated, chain of dependency is [{chain_of_dep_str}]')
+			print(f'package {package} is deprecated, chain of dependency is [{chain_of_dep_str}]\n')
+
+	print('Done')
 
 
 if __name__ == '__main__':
