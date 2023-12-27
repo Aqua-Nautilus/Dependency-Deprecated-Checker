@@ -79,12 +79,12 @@ def extract_github_repo_from_package_info(package_info):
     if github_repo.startswith('git@github.com'): # this is in case there is no : in it
         github_repo=github_repo.replace('git@github.com', 'https://github.com')
 
+    # remove everything under '#'
+    github_repo = github_repo.split('#', 1)[0]
+
     # clean all trailing '/''
     while github_repo.endswith('/'):
         github_repo=github_repo[:-1]
-
-    # remove everything under '#'
-    github_repo = github_repo.split('#', 1)[0]
 
     if github_repo.endswith('.git'):
         github_repo=github_repo[:-len('.git')]
