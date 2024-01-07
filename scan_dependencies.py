@@ -104,7 +104,7 @@ def check_github_archived(org ,repo, config):
     url = f"https://api.github.com/repos/{org}/{repo}"
     resp = gh.get(url, config.github_token)
 
-	# if its 404 we currently do not declare archived because maybe it became private etc'
+	# if its 404 we currently do not support declaring deprecated for 404
     if resp.status_code != 200:
         return False
     results = resp.json()
