@@ -40,3 +40,5 @@ python scan_dependencies.py --github_token YOUR_GITHUB_TOKEN [--exclude-archived
 
 
 An example of the results on the sample package.json:
+
+![sample_package_json_run](https://github.com/Ilaygoldman/dependency_deprecated/assets/29836366/0a5ccb39-0619-47e8-89ec-aeb66825f6b0)
