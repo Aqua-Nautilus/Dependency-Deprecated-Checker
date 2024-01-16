@@ -7,7 +7,8 @@
     "@babel/preset-env":"1.1.1",
     "dtslint":"1.1.1",
     "coveralls":"1.1.1",
-    "rollup-plugin-terser":"1.1.1"
+    "rollup-plugin-terser":"1.1.1",
+    "mamacro":"1.1.1"
   },
   "keywords": [
     "node"
