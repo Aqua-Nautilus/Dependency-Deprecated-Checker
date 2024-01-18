@@ -33,7 +33,7 @@ python scan_dependencies.py --github_token YOUR_GITHUB_TOKEN [--exclude-archived
 ### Command-line Arguments
 
 - `package_json_file`: Path to `package.json` file. Defaults to 'package.json' in the current directory.
-- `--github-token`: GitHub token for API access. This is mandatory unless `--exclude-archived` is used.
+- `--github-token`: GitHub token for API access. This is mandatory unless `--exclude-archived` and `--exclude-inaccessible` are used.
 - `--exclude-archived`: Exclude alerting on packages linked to archived repositories in GitHub.
 - `--exclude-repo`: Exclude alerting on packages without an associated repository.
 - `--exclude-inaccessible`: Exclude alerting on packages with a GitHub repository that is not accessible (404).
