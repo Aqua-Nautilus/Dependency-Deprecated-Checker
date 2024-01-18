@@ -41,5 +41,6 @@ python scan_dependencies.py --github_token YOUR_GITHUB_TOKEN [--exclude-archived
 
 An example of the results on the sample package.json:
 
-![carbon (1)](https://github.com/Ilaygoldman/dependency_deprecated/assets/29836366/16fcd212-8f84-4307-89f3-2f26e9944e22)
+
+![final_example](https://github.com/Ilaygoldman/dependency_deprecated/assets/29836366/1e81e68d-7378-459e-aa40-89bc84300dd7)
 
