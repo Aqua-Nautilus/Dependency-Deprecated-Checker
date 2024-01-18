@@ -12,6 +12,16 @@ The criteria for a deprecated package can be modified by the users.
 
 This tool is a Proof of Concept (PoC) and does not offer a comprehensive check.
 
+## What lead to the creation of this tool
+
+We found that 8.2% percent of the most downloaded npm packages are officially deprecated, but due to inconsistent practices in handling package dependencies, the real number is much larger, closer to 21.2%. 
+
+Moreover, some package maintainers, when confronted with security flaws, deprecate their packages instead of reporting them, getting a CVE assigned or remediating the vulnerabilities. These gaps can leave developers unaware that they are using unmaintained, vulnerable packages, and create opportunities for attackers to take over unmaintained code that continues to be used.
+
+![funnel (2)](https://github.com/Aqua-Nautilus/Dependency-Deprecated-Checker/assets/29836366/129ae729-6e53-40b6-b5d2-bca471617aec)
+
+More information can be found on our [blog](https://blog.aquasec.com/deceptive-deprecation-the-truth-about-npm-deprecated-packages).
+
 ## Installation
 
 Before you begin, ensure you have Python installed on your system. Then, clone the repository and install the dependencies:
