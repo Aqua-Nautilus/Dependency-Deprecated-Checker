@@ -37,7 +37,7 @@ pip install -r requirements.txt
 To use the Dependency Deprecation Checker, you will need a GitHub token (without permissions).
 
 ```bash
-python scan_dependencies.py --github_token YOUR_GITHUB_TOKEN [--exclude-archived] [--exclude-repo] [--exclude-inaccessible] [package_json_file]
+python scan_dependencies.py --github-token YOUR_GITHUB_TOKEN [--exclude-archived] [--exclude-repo] [--exclude-inaccessible] [package_json_file]
 ```
 
 ### Command-line Arguments
